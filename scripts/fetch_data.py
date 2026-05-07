@@ -374,17 +374,38 @@ def main():
         if i < 5:
             print(f"   #{i+1} {repo['full_name']}: {repo['summary'][:60]}...")
 
-    # Step 7: Build output
+    # Step 7: Build output (slim down fields for smaller file)
     today_str = datetime.now().strftime("%Y-%m-%d")
+    slim_repos = []
+    for r in top50:
+        slim_repos.append({
+            "name": r.get("name", ""),
+            "full_name": r.get("full_name", ""),
+            "url": r.get("url", ""),
+            "html_url": r.get("url", ""),
+            "description": r.get("description", ""),
+            "language": r.get("language", ""),
+            "stargazers_count": r.get("stars", 0),
+            "forks_count": r.get("forks", 0),
+            "open_issues_count": r.get("open_issues", 0),
+            "topics": r.get("topics", []),
+            "pushed_at": r.get("pushed_at", ""),
+            "created_at": r.get("created_at", ""),
+            "updated_at": r.get("updated_at", ""),
+            "license": {"spdx_id": r.get("license", "")} if r.get("license") else None,
+            "stars_today": r.get("stars_today", 0),
+            "owner": {"login": r.get("author", "")},
+        })
+
     output = {
         "meta": {
             "generated_at": datetime.now().isoformat(),
             "date": today_str,
             "total_found": len(agent_repos),
-            "top_count": len(top50),
-            "version": "1.0",
+            "top_count": len(slim_repos),
+            "version": "1.1",
         },
-        "repositories": top50,
+        "repositories": slim_repos,
     }
 
     # Step 8: Save
