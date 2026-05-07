@@ -1120,7 +1120,7 @@ function updateStats(repos) {
 async function loadData(forceRefresh = false) {
   const container = document.getElementById('rankingList');
 
-  // 先检查缓存
+  // 第1优先：localStorage 缓存
   if (!forceRefresh) {
     const cache = getCache();
     if (cache && cache.repos && cache.repos.length > 0) {
@@ -1131,12 +1131,49 @@ async function loadData(forceRefresh = false) {
       document.getElementById('sourceText').textContent = `CACHED · ${cache.date}`;
       document.getElementById('sourceIndicator').style.display = 'block';
       document.getElementById('refreshInfo').textContent = `📦 缓存数据 · ${cache.date}`;
-      console.log(`✅ 从缓存加载 ${allRepos.length} 个仓库 (${cache.date})`);
+      console.log(`✅ 从 localStorage 加载 ${allRepos.length} 个仓库 (${cache.date})`);
       return;
     }
   }
 
-  // 在线获取
+  // 第2优先：服务器静态数据 (CI每日生成，无需API)
+  if (!forceRefresh) {
+    try {
+      const resp = await fetch('data/today.json');
+      if (resp.ok) {
+        const data = await resp.json();
+        let repos = (data.repositories || []).map(r => {
+          r._category = categorize(r);
+          r._summary = generateSummary(r);
+          return r;
+        });
+        repos.sort((a, b) => {
+          const sa = (a.stargazers_count || 0) + (a.forks_count || 0) * 0.3;
+          const sb = (b.stargazers_count || 0) + (b.forks_count || 0) * 0.3;
+          return sb - sa;
+        });
+        repos = repos.slice(0, 50).map((r, i) => { r._rank = i + 1; return r; });
+
+        if (repos.length > 0) {
+          allRepos = repos;
+          setCache(allRepos);
+          updateStats(allRepos);
+          renderList();
+          const date = data.meta ? data.meta.date : new Date().toISOString().slice(0, 10);
+          document.getElementById('sourceDot').className = 'source-dot cached';
+          document.getElementById('sourceText').textContent = `CI · ${date}`;
+          document.getElementById('sourceIndicator').style.display = 'block';
+          document.getElementById('refreshInfo').textContent = `🚀 服务器数据 · ${date} · ${repos.length} repos`;
+          console.log(`✅ 从静态数据加载 ${repos.length} 个仓库 (${date})`);
+          return;
+        }
+      }
+    } catch (e) {
+      console.log('静态数据不可用，回退到实时API:', e.message);
+    }
+  }
+
+  // 第3优先：GitHub API 实时获取
   container.innerHTML = `
     <div class="state-box">
       <div class="loader"><div class="loader-ring"></div></div>
@@ -1164,7 +1201,7 @@ async function loadData(forceRefresh = false) {
   } catch (e) {
     console.error('数据加载失败:', e.message);
 
-    // 尝试降级到过期缓存
+    // 降级到过期缓存
     const oldCache = (() => {
       try {
         const raw = localStorage.getItem(CACHE_KEY);
