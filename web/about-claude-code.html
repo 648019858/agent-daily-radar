@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🤖 Claude Code 一人公司终极指南</title>
+<style>
+:root {
+  --bg: #06060c;
+  --text: #d8d8f0;
+  --text2: #7a7aaa;
+  --cyan: #00e5ff;
+  --purple: #a855f7;
+  --border: #1a1a38;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif; padding:40px 20px; }
+.container { max-width:900px; margin:0 auto; }
+h1 {
+  font-size:36px; text-align:center; margin-bottom:8px;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.sub { text-align:center; color:var(--text2); font-size:14px; letter-spacing:3px; margin-bottom:40px; }
+h2 { color:var(--cyan); font-size:22px; margin:32px 0 14px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+h3 { color:var(--text); font-size:17px; margin:18px 0 8px; }
+p, li { color:var(--text2); line-height:1.8; font-size:14px; }
+ul, ol { padding-left:20px; }
+.card {
+  background:rgba(17,17,34,0.6); border:1px solid var(--border);
+  border-radius:12px; padding:24px; margin:16px 0;
+  backdrop-filter:blur(8px);
+}
+.card:hover { border-color:rgba(0,229,255,0.3); }
+table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+th { background:rgba(0,229,255,0.08); color:var(--cyan); padding:12px; text-align:left; border-bottom:2px solid var(--border); }
+td { padding:10px 12px; border-bottom:1px solid var(--border); color:var(--text2); }
+tr:hover td { background:rgba(0,229,255,0.03); }
+.tag {
+  display:inline-block; padding:2px 10px; border-radius:4px; font-size:11px;
+  background:rgba(0,229,255,0.1); color:var(--cyan); margin:2px 4px;
+}
+.back-link { display:inline-block; margin-top:40px; color:var(--cyan); text-decoration:none; }
+.back-link:hover { text-decoration:underline; }
+code {
+  background:rgba(0,0,0,0.4); padding:2px 8px; border-radius:4px;
+  font-size:13px; color:var(--cyan);
+}
+hr { border:none; border-top:1px solid var(--border); margin:24px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>🚀 Claude Code 一人公司</h1>
+<p class="sub">ONE-PERSON COMPANY · SKILLS & WORKFLOWS</p>
+
+<h2>一、核心理念</h2>
+<div class="card">
+  <p>2026 年，<strong>Claude Code + 智能工具栈</strong>让一个人可以替代原来 5 人团队的工作。</p>
+  <table>
+    <tr><th>传统角色</th><th>Claude Code 替代方案</th></tr>
+    <tr><td>项目经理（需求分析）</td><td>Claude Code + planning skills</td></tr>
+    <tr><td>开发工程师（编码）</td><td>Claude Code + n8n 自动化</td></tr>
+    <tr><td>QA 工程师（测试）</td><td><code>/simplify</code> + <code>/code-review</code></td></tr>
+    <tr><td>文案/文档</td><td>Claude Code 直接输出</td></tr>
+    <tr><td>销售/获客</td><td>Upwork/Fiverr + SEO skills</td></tr>
+  </table>
+</div>
+
+<h2>二、必装 Skill 套装</h2>
+
+<h3>🔴 第一梯队（必装）</h3>
+<div class="card">
+  <p><strong>1. davila7/claude-code-templates</strong> <span class="tag">⭐26K+</span></p>
+  <p>Claude Code 的"应用商店"，一键安装 100+ 现成 Agent，涵盖前端/后端/DBA/安全/DevOps 等角色。内含6大资产类型：Agents、Commands、MCPs、Settings、Hooks、Skills。</p>
+  <p style="margin-top:10px;"><strong>📦 安装指令：</strong></p>
+  <code>npx claude-code-templates@latest</code>
+  <p style="margin-top:6px;font-size:13px;color:var(--text2);">交互式菜单选择所需组件，或直接指定：</p>
+  <code>npx claude-code-templates@latest --agent=development-team/frontend-developer</code>
+  <code style="display:block;margin-top:4px;">npx claude-code-templates@latest --skill=pdf --mcp=github</code>
+  <p style="margin-top:6px;font-size:13px;color:var(--text2);">🌐 在线浏览：<a href="https://aitmpl.com" style="color:var(--cyan);">aitmpl.com</a> | GitHub: <a href="https://github.com/davila7/claude-code-templates" style="color:var(--cyan);">davila7/claude-code-templates</a></p>
+  <hr>
+  <p><strong>2. obra/superpowers</strong> <span class="tag">⭐120K+</span></p>
+  <p>完整 SDLC 流程框架：头脑风暴→规格→计划→子代理并行→代码审查→合并。强制 TDD，自动 PR 创建。<strong>每日新增 ~710 stars</strong>，当前 GitHub 最活跃的 AI 编码代理框架之一。</p>
+  <p style="margin-top:10px;"><strong>📦 安装指令：</strong></p>
+  <code>git clone https://github.com/obra/superpowers.git</code>
+  <p style="margin-top:6px;font-size:13px;color:var(--text2);">将 skills/ 目录下的 SKILL.md 文件复制到你的项目 <code>.claude/skills/</code> 目录，并在 CLAUDE.md 中声明使用规则。核心技能包括：</p>
+  <code style="display:block;margin-top:4px;">cp -r superpowers/skills/* your-project/.claude/skills/</code>
+  <code style="display:block;margin-top:4px;"># 在 CLAUDE.md 中添加：<br># use superpowers:brainstorm before design<br># use superpowers:execute-plan for implementation<br># run /code-review before merge</code>
+</div>
+
+<h3>🟡 第二梯队（强烈推荐）</h3>
+<div class="card">
+  <p><strong>3. everything-claude-code</strong> <span class="tag">⭐120K+</span></p>
+  <p>Claude Code 增强套件，含 1,647 stars/day 增长。提供上下文窗口优化、安全增强、最佳实践配置、HUD 监控面板等功能集合。</p>
+  <p style="margin-top:10px;"><strong>📦 安装指令：</strong></p>
+  <code>git clone https://github.com/affaan-m/everything-claude-code.git</code>
+  <p style="margin-top:6px;font-size:13px;color:var(--text2);">涵盖 Claude Code 配置文件、hooks、skills 的全面模板集合，按需复制到 <code>~/.claude/</code> 或项目 <code>.claude/</code> 目录：</p>
+  <code style="display:block;margin-top:4px;">cp everything-claude-code/settings.json ~/.claude/settings.json</code>
+  <code style="display:block;margin-top:4px;"># 推荐：先浏览仓库 README 选择需要的模块再安装</code>
+  <hr>
+  <p><strong>4. claude-mem (thedotmack/claude-mem)</strong> <span class="tag">⭐59K+</span></p>
+  <p>Claude 长会话记忆持久化插件，跨项目、跨会话保持上下文。"失忆"问题的终极解决方案，支持自动提取事实、追踪变更、过期淘汰。</p>
+  <p style="margin-top:10px;"><strong>📦 安装指令：</strong></p>
+  <code>git clone https://github.com/thedotmack/claude-mem.git</code>
+  <p style="margin-top:6px;font-size:13px;color:var(--text2);">安装为 Claude Code 的 MCP Server 或 Hook，在 <code>~/.claude/settings.json</code> 中配置：</p>
+  <code style="display:block;margin-top:4px;"># 添加到 settings.json mcpServers 段：<br>{<br>  "claude-mem": {<br>    "command": "node",<br>    "args": ["path/to/claude-mem/index.js"]<br>  }<br>}</code>
+</div>
+
+<h3>🟢 第三梯队（进阶）</h3>
+<div class="card">
+  <p><strong>5. slavingia/skills</strong> <span class="tag">⭐3.5K+</span></p>
+  <p>Gumroad 创始人 Sahil Lavingia 开源的极简创业者方法论——从找社群 → 验证想法 → MVP → 第一批客户 → 定价 → 营销计划 → 极简审查，完整的9步创业框架。特别适合独立开发者 / 一人公司构建产品。</p>
+  <p style="margin-top:10px;"><strong>📦 安装指令：</strong></p>
+  <code>git clone https://github.com/slavingia/skills.git</code>
+  <p style="margin-top:6px;font-size:13px;color:var(--text2);">将 skills 目录复制到项目 <code>.claude/skills/</code> 下，按顺序激活：</p>
+  <code style="display:block;margin-top:4px;">cp -r skills/minimalist-entrepreneur/* your-project/.claude/skills/</code>
+  <code style="display:block;margin-top:4px;"># 在 CLAUDE.md 中按阶段声明：<br># Step 1: use find-community → Step 2: use validate-idea<br># → Step 3: use mvp → Step 5: use first-customers → ...</code>
+  <hr>
+  <p><strong>6. arozumenko/sdlc-skills</strong> <span class="tag">企业级</span></p>
+  <p>企业级软件开发生命周期全套 skills，覆盖需求→设计→编码→测试→部署→运维全流程。跨平台兼容：支持 Claude Code / Cursor / Windsurf / GitHub Copilot。</p>
+  <p style="margin-top:10px;"><strong>📦 安装指令：</strong></p>
+  <code>git clone https://github.com/arozumenko/sdlc-skills.git</code>
+  <p style="margin-top:6px;font-size:13px;color:var(--text2);">按需选择对应角色和阶段的 skill 文件，放入对应平台的 skills 目录：</p>
+  <code style="display:block;margin-top:4px;"># Claude Code 用户：<br>cp sdlc-skills/claude-code/*.md your-project/.claude/skills/</code>
+  <code style="display:block;margin-top:4px;"># Cursor 用户：<br>cp sdlc-skills/cursor/.cursorrules your-project/.cursorrules</code>
+</div>
+
+<h2>三、最佳工作流</h2>
+
+<h3>总览：Director → Manager → Team 模式</h3>
+<div class="card">
+  <p>将<strong>一人公司</strong>模拟为完整软件团队：你扮演<strong>总监</strong>制定方向，Claude Code 自动化<strong>工程经理</strong>分解任务，多个<strong>子代理</strong>并行执行，最后由自动化<strong>QA/安全</strong>审查把关。</p>
+</div>
+
+<!-- 工作流 1 -->
+<h3>环节 1：你写 Brief（总监）</h3>
+<div class="card">
+  <p><strong>🔗 工具：</strong>Claude Code 内建对话 + CLAUDE.md 项目文件</p>
+  <p><strong>📋 适用范围：</strong>所有项目，是整个工作流的入口。适用于新功能开发、Bug 修复、重构等任何需要编码的场景。</p>
+  <table>
+    <tr><th style="width:8%">维度</th><th>分析</th></tr>
+    <tr><td style="color:var(--cyan);">✅ 优势</td><td>零学习成本，用自然语言描述需求。CLAUDE.md 提供持久化的项目上下文（架构、技术栈、规范），Claude Code 能精准理解项目全貌。</td></tr>
+    <tr><td style="color:#ff6b9d;">❌ 劣势</td><td>描述模糊时 AI 可能跑偏。需求越复杂，Brief 需要越详细——你需要有清晰的产品思维。没有"验收标准"的习惯会导致返工。</td></tr>
+  </table>
+</div>
+
+<!-- 工作流 2 -->
+<h3>环节 2：<code>/batch</code> 分解任务（工程经理）</h3>
+<div class="card">
+  <p><strong>🔗 来源：</strong><a href="https://github.com/obra/superpowers" style="color:var(--cyan);">obra/superpowers</a> 内置命令</p>
+  <p><strong>📋 适用范围：</strong>中大型功能开发（涉及 3+ 文件的改动）。小型 Bug 修复或单文件改动不需要 batch，直接用 Claude Code 对话即可。</p>
+  <table>
+    <tr><th style="width:8%">维度</th><th>分析</th></tr>
+    <tr><td style="color:var(--cyan);">✅ 优势</td><td>自动将复杂任务拆分成 5-30 个并行单元，每个单元在独立 git worktree 中开发，互不干扰。大幅缩短大型功能的总开发时间，理论加速比 = 并行任务数。</td></tr>
+    <tr><td style="color:#ff6b9d;">❌ 劣势</td><td>任务拆分质量取决于 AI 判断——拆分过细会导致合并冲突，拆分过粗则并行收益低。需要足够磁盘空间（每个 worktree 一份代码副本）。不适合强依赖关系的任务链。</td></tr>
+  </table>
+</div>
+
+<!-- 工作流 3 -->
+<h3>环节 3：子代理并行开发（团队）</h3>
+<div class="card">
+  <p><strong>🔗 来源：</strong><a href="https://github.com/obra/superpowers" style="color:var(--cyan);">obra/superpowers</a> 的 execute-plan 子代理系统</p>
+  <p><strong>📋 适用范围：</strong>已被 /batch 拆分好的独立任务单元。每个子代理在隔离的 git worktree 中编码、测试、提交、创建 PR。</p>
+  <table>
+    <tr><th style="width:8%">维度</th><th>分析</th></tr>
+    <tr><td style="color:var(--cyan);">✅ 优势</td><td>真正的并行——多个 Claude Code 实例同时工作，每个专注一个子任务。自动 commit + 自动创建 PR，无需人工管理。支持结合 Context7 MCP 获取实时文档。</td></tr>
+    <tr><td style="color:#ff6b9d;">❌ 劣势</td><td>大量并发调用可能触发 API 频率限制（建议使用企业版 API Key）。多个子代理可能产生风格不一致的代码。需要事后统一审查来避免碎片化。</td></tr>
+  </table>
+</div>
+
+<!-- 工作流 4 -->
+<h3>环节 4：<code>/simplify</code> 审查输出（高级工程师）</h3>
+<div class="card">
+  <p><strong>🔗 来源：</strong>Claude Code 内置 skill，输入 <code>/simplify</code> 即可触发</p>
+  <p><strong>📋 适用范围：</strong>所有代码改动完成后。特别适合多人/多代理协作后的代码整合阶段，以及重构前的代码审计。</p>
+  <table>
+    <tr><th style="width:8%">维度</th><th>分析</th></tr>
+    <tr><td style="color:var(--cyan);">✅ 优势</td><td>3 个并行审查代理：<strong>Reuse Checker</strong>（发现可复用的现有代码）、<strong>Quality Checker</strong>（检查代码质量和潜在 Bug）、<strong>Efficiency Checker</strong>（发现性能瓶颈和冗余）。一次运行覆盖三大维度。</td></tr>
+    <tr><td style="color:#ff6b9d;">❌ 劣势</td><td>审查结果的质量依赖于 AI 对代码库的理解深度——大型代码库中可能遗漏跨文件的隐含依赖。建议人工复核关键路径的审查建议。</td></tr>
+  </table>
+</div>
+
+<!-- 工作流 5 -->
+<h3>环节 5：<code>/code-review</code> 最终把关（QA/安全）</h3>
+<div class="card">
+  <p><strong>🔗 来源：</strong>Claude Code 内置 skill，输入 <code>/code-review</code> 即可触发</p>
+  <p><strong>📋 适用范围：</strong>PR 合并前的最终检查。建议对每个 PR 都运行，尤其是涉及安全敏感（认证、支付、数据）或核心业务逻辑的改动。</p>
+  <table>
+    <tr><th style="width:8%">维度</th><th>分析</th></tr>
+    <tr><td style="color:var(--cyan);">✅ 优势</td><td>4 个独立审查员从不同角度审查（安全性、正确性、可维护性、可读性），每个给出 <strong>0-100 置信度评分</strong>，只有超过阈值的问题才会被报告——减少噪音。</td></tr>
+    <tr><td style="color:#ff6b9d;">❌ 劣势</td><td>审查覆盖度受限于静态分析，无法检测运行时行为问题（内存泄漏、并发竞态）。安全审查不能替代专业安全审计工具（如 Snyk、SonarQube）。</td></tr>
+  </table>
+</div>
+
+<!-- 总览对比表 -->
+<h3>📊 五环节优劣势总览</h3>
+<div class="card">
+  <table>
+    <tr><th>环节</th><th>工具</th><th style="width:15%">最适用场景</th><th style="width:15%">不适用场景</th><th>关键风险</th></tr>
+    <tr>
+      <td><strong>Brief</strong></td>
+      <td>CLAUDE.md</td>
+      <td>所有项目</td>
+      <td>—</td>
+      <td>需求模糊导致返工</td>
+    </tr>
+    <tr>
+      <td><strong>/batch</strong></td>
+      <td>superpowers</td>
+      <td>大型功能（3+ 文件）</td>
+      <td>单文件小改动</td>
+      <td>拆分不当 / 合并冲突</td>
+    </tr>
+    <tr>
+      <td><strong>子代理</strong></td>
+      <td>superpowers</td>
+      <td>可并行的独立任务</td>
+      <td>强依赖链任务</td>
+      <td>代码风格不一致 / API 限流</td>
+    </tr>
+    <tr>
+      <td><strong>/simplify</strong></td>
+      <td>Claude Code 内置</td>
+      <td>代码整合 / 重构前审计</td>
+      <td>探索性原型阶段</td>
+      <td>遗漏跨文件依赖</td>
+    </tr>
+    <tr>
+      <td><strong>/code-review</strong></td>
+      <td>Claude Code 内置</td>
+      <td>安全敏感 / 核心逻辑</td>
+      <td>纯文档/配置改动</td>
+      <td>无法检测运行时问题</td>
+    </tr>
+  </table>
+</div>
+
+<h2>四、必备 MCP 服务</h2>
+<div class="card">
+  <p><strong>Context7</strong> — 实时最新版本文档（React/Next.js/Prisma 等）</p>
+  <p><strong>Context Hub</strong> (Andrew Ng 团队) — 68+ 服务的精选 API 规范</p>
+  <p><strong>SuperMemory</strong> — 排名第一的记忆引擎，自动提取事实、追踪变化</p>
+  <p><strong>agent-browser</strong> (Vercel Labs) — 无头浏览器自动化</p>
+</div>
+
+<h2>五、变现路径</h2>
+<table>
+  <tr><th>路径</th><th>时间</th><th>收入潜力</th></tr>
+  <tr><td>定制自动化项目（Upwork）</td><td>立即</td><td>$300-3,000/项目</td></tr>
+  <tr><td>n8n 模板销售</td><td>3-6 月</td><td>$500-1,000/月</td></tr>
+  <tr><td>MCP Server 开发</td><td>3-6 月</td><td>$200-500/月</td></tr>
+  <tr><td>Claude Code Skills 包</td><td>3-6 月</td><td>$200-500/月</td></tr>
+  <tr><td>SEO/GEO 优化服务</td><td>1-3 月</td><td>$2K-12K/次</td></tr>
+</table>
+
+<h2>六、关键洞察</h2>
+<div class="card">
+  <p>💡 <strong>最好的 skill 是你自己做的那个。</strong>公开 skill 给你工作模式，真正回报来自将你自己的重复工作变成可复用 skill。</p>
+  <p>📈 <strong>2026 趋势：</strong>Skill 仓库增长速度（731 stars/day）远超运行时框架（474 stars/day），<strong>35× 更低的 Issue 压力</strong>——Skill 层的价值正在爆发。</p>
+</div>
+
+<a href="index.html" class="back-link">← 返回 Agent 趋势雷达</a>
+
+</div>
+</body>
+</html>
