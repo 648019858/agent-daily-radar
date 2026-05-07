@@ -1141,8 +1141,11 @@ async function loadData(forceRefresh = false) {
 
   // 第2优先：服务器静态数据 (CI每日生成，无需API)
   if (!forceRefresh) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
     try {
-      const resp = await fetch('data/today.json?t=' + new Date().toISOString().slice(0,10));
+      const resp = await fetch('data/today.json?t=' + new Date().toISOString().slice(0,10), { signal: ctrl.signal });
+      clearTimeout(timer);
       if (resp.ok) {
         const data = await resp.json();
         let repos = (data.repositories || []).map(r => {
@@ -1172,6 +1175,7 @@ async function loadData(forceRefresh = false) {
         }
       }
     } catch (e) {
+      clearTimeout(timer);
       console.log('静态数据不可用，回退到实时API:', e.message);
     }
   }
