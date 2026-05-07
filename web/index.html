@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>🤖 Agent Daily Radar — AI Agent 趋势雷达 Top 50</title>
 <style>
 :root {
@@ -1139,7 +1142,7 @@ async function loadData(forceRefresh = false) {
   // 第2优先：服务器静态数据 (CI每日生成，无需API)
   if (!forceRefresh) {
     try {
-      const resp = await fetch('data/today.json');
+      const resp = await fetch('data/today.json?t=' + new Date().toISOString().slice(0,10));
       if (resp.ok) {
         const data = await resp.json();
         let repos = (data.repositories || []).map(r => {
