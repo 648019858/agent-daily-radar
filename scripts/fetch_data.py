@@ -30,6 +30,9 @@ SEARCH_QUERIES = [
     "topic:multi-agent",
     "topic:langchain",
     "topic:autogpt",
+    "claude code skills",
+    "skill claude-code extension",
+    "superpowers claude code skill",
     "ai agent framework",
     "multi agent system",
     "agentic ai",
@@ -238,6 +241,7 @@ def is_agent_related(repo):
         "openai", "anthropic", "deepseek", "transformer",
         "workflow", "chain", "pipeline", "automation",
         "conversation", "dialogue", "nlp", "natural language",
+        "skill", "superpowers",
     ]
 
     text = (
@@ -270,6 +274,8 @@ def generate_summary(repo):
         category = "多智能体系统"
     elif any(kw in topic_lower for kw in ["mcp", "model context protocol"]):
         category = "MCP 协议/工具集成"
+    elif any(kw in topic_lower for kw in ["skill", "superpowers", "claude-code-template", "claude code skill"]):
+        category = "Claude Code Skills"
     elif any(kw in topic_lower for kw in ["memory", "remember", "persist"]):
         category = "AI 记忆/持久化"
     elif any(kw in topic_lower for kw in ["workflow", "pipeline", "orchestrat"]):

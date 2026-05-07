@@ -251,6 +251,44 @@ body {
   color: var(--text-secondary); font-size: 11px; font-family: var(--font-mono);
 }
 
+/* Token 设置 */
+.token-btn {
+  padding: 8px 16px;
+  background: rgba(255, 180, 0, 0.08);
+  border: 1px solid rgba(255, 180, 0, 0.4);
+  border-radius: 6px; color: #ffb400;
+  cursor: pointer; font-size: 12px; font-family: var(--font-mono);
+  letter-spacing: 1px; transition: all 0.3s ease;
+}
+.token-btn:hover { background: rgba(255, 180, 0, 0.2); box-shadow: 0 0 20px rgba(255, 180, 0, 0.2); }
+.token-btn.has-token { border-color: rgba(0, 255, 136, 0.6); color: #00ff88; }
+.token-row {
+  display: none; margin-top: 8px; gap: 8px; align-items: center;
+  padding: 10px 16px;
+  background: rgba(17, 17, 34, 0.5);
+  border: 1px solid var(--border-color); border-radius: 8px;
+}
+.token-row.show { display: flex; }
+.token-input {
+  flex: 1; padding: 8px 12px;
+  background: rgba(8, 8, 18, 0.8);
+  border: 1px solid var(--border-color);
+  border-radius: 6px; color: var(--text-primary);
+  font-size: 13px; font-family: var(--font-mono);
+}
+.token-input:focus { outline: none; border-color: #ffb400; }
+.token-save-btn {
+  padding: 8px 16px;
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.4);
+  border-radius: 6px; color: var(--neon-green);
+  cursor: pointer; font-size: 12px; font-family: var(--font-mono);
+  white-space: nowrap; transition: all 0.2s;
+}
+.token-save-btn:hover { background: rgba(0, 255, 136, 0.2); }
+.token-hint { color: var(--text-secondary); font-size: 11px; white-space: nowrap; }
+.token-hint a { color: var(--neon-cyan); }
+
 /* ===== 排行列表 ===== */
 .ranking-list {
   display: flex; flex-direction: column; gap: 8px;
@@ -322,6 +360,9 @@ body {
 .tag-topic { background: rgba(0, 229, 255, 0.08); color: var(--neon-cyan); border: 1px solid rgba(0, 229, 255, 0.2); }
 .tag-framework { background: rgba(168, 85, 247, 0.1); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.25); }
 .tag-multi { background: rgba(255, 68, 136, 0.1); color: #ff7096; border: 1px solid rgba(255, 68, 136, 0.25); }
+.tag-skills { background: rgba(255, 215, 64, 0.1); color: #ffd740; border: 1px solid rgba(255, 215, 64, 0.3); }
+.tag-mcp { background: rgba(0, 255, 136, 0.08); color: #00ff88; border: 1px solid rgba(0, 255, 136, 0.25); }
+.tag-tool { background: rgba(255, 136, 68, 0.1); color: #ff8844; border: 1px solid rgba(255, 136, 68, 0.25); }
 
 /* 星数 */
 .repo-stats { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
@@ -349,6 +390,10 @@ body {
 .repo-summary.show { display: block; }
 .repo-summary .s-label { color: var(--neon-cyan); font-weight: 600; }
 .repo-summary .s-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.summary-section { display: flex; flex-direction: column; gap: 6px; }
+.summary-row { display: flex; align-items: baseline; gap: 4px; font-size: 13px; line-height: 1.7; color: #b0b0d0; }
+.summary-row .s-icon { flex-shrink: 0; font-size: 14px; width: 20px; text-align: center; }
+.summary-row .s-label { color: var(--neon-cyan); font-weight: 600; white-space: nowrap; flex-shrink: 0; }
 .s-btn {
   padding: 7px 16px;
   background: rgba(0, 229, 255, 0.06);
@@ -515,10 +560,21 @@ body {
       <button class="filter-btn" data-filter="framework">🧩 FRAMEWORK</button>
       <button class="filter-btn" data-filter="multi-agent">🪐 MULTI-AGENT</button>
       <button class="filter-btn" data-filter="mcp">🔌 MCP</button>
+      <button class="filter-btn" data-filter="skills">⚡ SKILLS</button>
       <button class="filter-btn" data-filter="tool">🔧 TOOLING</button>
     </div>
     <button class="refresh-btn" id="refreshBtn" onclick="refreshData()" title="刷新数据 (清除缓存)">🔄 REFRESH</button>
+    <button class="token-btn" id="tokenBtn" onclick="toggleToken()" title="配置 GitHub Token">🔑 TOKEN</button>
     <span class="refresh-info" id="refreshInfo"></span>
+  </div>
+  <div class="token-row" id="tokenRow">
+    <input type="password" class="token-input" id="tokenInput"
+           placeholder="粘贴 GitHub Personal Access Token...">
+    <button class="token-save-btn" onclick="saveToken()">💾 保存</button>
+    <button class="token-save-btn" onclick="clearToken()" style="border-color:rgba(255,68,136,0.4);color:var(--neon-pink);background:rgba(255,68,136,0.06);">🗑 清除</button>
+    <span class="token-hint">
+      <a href="https://github.com/settings/tokens" target="_blank">获取 Token →</a> 无需任何权限，仅提升限额
+    </span>
   </div>
 
   <!-- 排行列表 -->
@@ -614,7 +670,10 @@ body {
 // ============================================================
 const CACHE_KEY = 'agent_radar_data';
 const CACHE_TTL = 60 * 60 * 1000; // 1 小时缓存
-const GITHUB_TOKEN = ''; // 可选: 填入 GitHub Token 提高限额 (60→5000 req/h)
+const TOKEN_KEY = 'agent_radar_gh_token';
+
+function getToken() { return localStorage.getItem(TOKEN_KEY) || ''; }
+function hasToken() { return !!getToken(); }
 
 let allRepos = [];
 let currentFilter = 'all';
@@ -643,6 +702,9 @@ const SEARCH_QUERIES = [
   'topic:multi-agent',
   'topic:langchain',
   'topic:claude-code',
+  'claude-code+skills stars:>10',
+  'skill+claude-code+extension stars:>50',
+  'superpowers+claude-code+skill stars:>10',
   'ai+agent+framework+language:python stars:>1000',
   'autonomous+agent+github stars:>500',
   'agentic+ai+tool stars:>500',
@@ -654,7 +716,8 @@ function buildSearchURL(query, page = 1) {
 
 async function fetchWithAuth(url) {
   const headers = { 'Accept': 'application/vnd.github.v3+json' };
-  if (GITHUB_TOKEN) headers['Authorization'] = `token ${GITHUB_TOKEN}`;
+  const token = getToken();
+  if (token) headers['Authorization'] = `token ${token}`;
   const resp = await fetch(url, { headers });
   if (resp.status === 403) throw new Error('RATE_LIMIT');
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -670,57 +733,188 @@ function categorize(repo) {
 
   if (/multi.agent|swarm|multi agent|orchestrat|crew/.test(text)) return 'multi-agent';
   if (/mcp|model.context.protocol/.test(text)) return 'mcp';
+  if (/superpowers|claude-code-template|claude.?code.*skill|sdlc-skills|skill.*claude|\bskills\b/i.test(text)) return 'skills';
   if (/framework|langchain|sdk|autogen|crewai|langgraph/.test(text)) return 'framework';
-  if (/tool|function.call|plugin|extension|skill/.test(text)) return 'tool';
+  if (/tool|function.call|plugin|extension/.test(text)) return 'tool';
   return 'other';
 }
 
 function generateSummary(repo) {
-  const desc = repo.description || '';
-  const name = repo.name || '';
+  const desc = (repo.description || '').trim();
+  const name = (repo.name || '').replace(/[-_.]/g, ' ');
   const topics = (repo.topics || []).join(' ').toLowerCase();
   const text = (desc + ' ' + topics).toLowerCase();
   const stars = repo.stargazers_count || 0;
+  const lang = repo.language || '';
 
-  // 识别类别
-  let category = 'AI Agent 工具';
+  // ====== 类别识别 + 功能定位 + 核心价值 + 适用场景 ======
+  let category = 'AI Agent 生态工具';
+  let functionality = '基于AI Agent技术栈构建，为智能体应用提供关键基础设施和能力扩展';
+  let coreValue = '降低AI Agent应用的开发和运维门槛，加速从原型到生产的落地过程';
+  let useCases = 'Agent应用开发、AI工作流自动化、智能系统集成';
   let tags = [];
 
-  if (/multi.agent|swarm|orchestrat|crew/.test(text)) { category = '多智能体协作系统'; tags.push('多智能体'); }
-  if (/mcp|model.context.protocol/.test(text)) { category = 'MCP 模型上下文协议'; tags.push('MCP协议'); }
-  if (/memory|remember|persist|long.?term/.test(text)) { category = 'Agent 记忆持久化'; tags.push('记忆管理'); }
-  if (/workflow|pipeline|flow/.test(text)) { category = 'AI 工作流编排引擎'; tags.push('工作流'); }
-  if (/code|cli|terminal|copilot|programming|ide/.test(text)) { category = 'AI 编程开发助手'; tags.push('编程辅助'); }
-  if (/rag|retriev|vector|embedding|knowledge/.test(text)) { category = 'RAG 检索增强系统'; tags.push('RAG'); }
-  if (/chatbot|conversation|assistant|dialogue/.test(text)) { category = '智能对话助手'; tags.push('对话系统'); }
-  if (/framework|langchain|sdk|autogen/.test(text)) { category = 'Agent 开发框架'; tags.push('开发框架'); }
-  if (/tool.?call|function.?call|plugin/.test(text)) { category = 'Agent 工具调用引擎'; tags.push('工具调用'); }
-  if (/autonomous|auto.?gpt|self.?improv/.test(text)) { category = '自主智能体'; tags.push('自主Agent'); }
-  if (/reasoning|planning|think|inference/.test(text)) { category = '推理规划引擎'; tags.push('推理引擎'); }
-  if (/browser|web|frontend|ui|selenium/.test(text)) { category = '浏览器/UI 自动化'; tags.push('浏览器自动化'); }
-  if (/monitor|observ|track|tracing/.test(text)) { category = 'Agent 监控可观测'; tags.push('可观测性'); }
-  if (/evaluat|benchmark|test/.test(text)) { category = 'Agent 评测基准'; tags.push('评测'); }
-  if (/security|safe|guard/.test(text)) { category = 'AI 安全防护'; tags.push('安全'); }
-  if (/claude|anthropic/.test(text)) { category = 'Claude 生态工具'; tags.push('Claude'); }
-  if (/openai|gpt|chatgpt/.test(text)) { category = 'OpenAI 生态工具'; tags.push('OpenAI'); }
-  if (/deepseek/.test(text)) { category = 'DeepSeek 生态工具'; tags.push('DeepSeek'); }
-
-  // 热度描述
-  let heat = '新兴项目';
-  if (stars > 100000) heat = '现象级';
-  else if (stars > 50000) heat = '超高热度';
-  else if (stars > 10000) heat = '热门';
-  else if (stars > 1000) heat = '正在崛起';
-
-  // 构建摘要
-  let summary = `【${category}】${heat}开源项目`;
-  if (desc) {
-    const shortDesc = desc.length > 140 ? desc.slice(0, 137) + '...' : desc;
-    summary += `，${shortDesc}`;
+  // 按优先级匹配分类
+  if (/multi.agent|swarm|multi agent|orchestrat|crew/i.test(text)) {
+    category = '多智能体协作系统';
+    functionality = '让多个AI Agent像高效团队一样分工协作——自动拆解复杂任务、分配角色职责、协调并行执行、汇总最终结果';
+    coreValue = '将复杂业务流程的AI自动化率提升至90%+，解决单一Agent无法处理的跨领域、多步骤复杂场景';
+    useCases = '自动化软件开发流水线、多角色客服系统、跨部门业务协同、科研文献综合评审';
+    tags.push('多智能体协作');
   }
-  if (tags.length > 0) summary += `。核心标签：${tags.join('、')}`;
+  if (/mcp|model.context.protocol/i.test(text)) {
+    category = 'MCP 模型上下文协议';
+    functionality = '为AI模型建立标准化的"外接设备接口"——安全连接数据库、API、文件系统、第三方服务等外部资源';
+    coreValue = '让AI突破训练数据的时空限制，实时获取最新信息、执行实际操作，将AI从"聊天工具"升级为"行动引擎"';
+    useCases = '企业知识库智能查询、IDE上下文感知编码、数据库自然语言操作、多服务API编排';
+    tags.push('MCP协议');
+  }
+  if (/skill|superpowers|claude.?code.*skill/i.test(text)) {
+    category = 'Claude Code Skills 扩展';
+    functionality = '将专业领域的最佳实践封装为可复用的AI技能包——像给AI安装"职业技能证书"，即装即用';
+    coreValue = '让Claude Code从通用助手进化为领域专家，每个Skill代表一套完整的专业工作流，开箱即获得资深工程师级别的产出质量';
+    useCases = '全栈项目开发、自动化测试流水线、安全代码审查、技术文档自动生成';
+    tags.push('Skills扩展');
+  }
+  if (/memory|remember|persist|long.?term/i.test(text)) {
+    category = 'Agent 记忆持久化引擎';
+    functionality = '赋予AI长期记忆能力——跨会话保留用户偏好、历史决策、领域知识，让每次对话都建立在"了解你"的基础上';
+    coreValue = '解决AI"失忆症"的核心痛点，将上下文窗口从"单次对话"扩展到"持续关系"，显著提升个性化和连贯性体验';
+    useCases = '个人AI助手长期记忆、企业知识图谱构建、客户服务历史追踪、学习辅导进度管理';
+    tags.push('记忆管理');
+  }
+  if (/workflow|pipeline|flow/i.test(text)) {
+    category = 'AI 工作流编排引擎';
+    functionality = '将AI任务编排为可视化或代码化的自动化流水线——定义步骤、条件分支、循环逻辑，让AI按既定流程稳定执行';
+    coreValue = '将AI的"一次性回答"升级为"可复用的自动化流程"，减少70%+的重复性人工操作，确保执行一致性和可审计性';
+    useCases = '数据ETL管道、内容审核流水线、自动化报告生成、CI/CD智能集成';
+    tags.push('工作流编排');
+  }
+  if (/code|cli|terminal|copilot|programming|ide/i.test(text)) {
+    category = 'AI 编程开发助手';
+    functionality = '在编码全流程中提供智能辅助——从需求理解、代码生成、调试诊断到重构优化，像一位资深Pair Programming搭档';
+    coreValue = '将开发效率提升2-5倍，减少80%的重复性编码工作，让开发者专注于架构设计和创造性问题解决';
+    useCases = '全栈Web开发、代码审查与重构、自动化测试编写、遗留系统迁移升级';
+    tags.push('编程辅助');
+  }
+  if (/rag|retriev|vector|embedding|knowledge/i.test(text)) {
+    category = 'RAG 检索增强生成系统';
+    functionality = '让AI在回答问题前先"翻资料"——从私有知识库中检索最相关的信息片段，再基于可靠证据生成回答';
+    coreValue = '消除AI"幻觉"问题，确保回答基于真实数据源可追溯，为企业提供准确可靠的知识服务';
+    useCases = '企业文档智能问答、法律/医疗专业咨询、学术论文辅助研究、产品说明书智能检索';
+    tags.push('RAG检索');
+  }
+  if (/chatbot|conversation|assistant|dialogue/i.test(text)) {
+    category = '智能对话助手';
+    functionality = '构建具备上下文理解、多轮对话、情感感知能力的智能对话系统，模拟真人交互体验';
+    coreValue = '提供7×24小时一致品质的对话服务，降低客服人力成本60%+，同时提升用户满意度和响应速度';
+    useCases = '电商智能客服、企业内部IT Helpdesk、教育培训辅导、健康咨询初筛';
+    tags.push('对话系统');
+  }
+  if (/framework|langchain|sdk|autogen/i.test(text)) {
+    category = 'Agent 开发框架';
+    functionality = '提供搭建AI Agent应用的"脚手架"——包含标准化的组件库、工具链、最佳实践模板，让Agent开发像搭积木一样高效';
+    coreValue = '将Agent应用开发周期从数周压缩到数天，降低技术门槛让中小团队也能构建生产级AI应用';
+    useCases = '快速原型验证、企业级Agent应用开发、AI SaaS产品构建、教育培训实验平台';
+    tags.push('开发框架');
+  }
+  if (/tool.?call|function.?call|plugin/i.test(text)) {
+    category = 'Agent 工具调用引擎';
+    functionality = '让AI学会"使用工具"——定义和管理AI可以调用的外部函数、API、插件，将AI的推理能力转化为实际操作';
+    coreValue = '打通AI从"思考"到"行动"的最后一公里，让AI能够实际改文件、发邮件、查数据库、控制设备';
+    useCases = '自动化运维脚本、智能家居控制、DevOps工具集成、办公自动化机器人';
+    tags.push('工具调用');
+  }
+  if (/autonomous|auto.?gpt|self.?improv/i.test(text)) {
+    category = '自主智能体';
+    functionality = '构建能独立设定目标、制定计划、自我纠错的自主AI系统——无需人类逐步指导即可完成端到端任务';
+    coreValue = '实现真正的"设定目标即交付结果"，将人工从繁琐的过程管理中解放出来，聚焦于战略决策层面';
+    useCases = '市场调研自动化、竞品分析报告生成、自动化渗透测试、个人AI管家';
+    tags.push('自主Agent');
+  }
+  if (/reasoning|planning|think|inference/i.test(text)) {
+    category = '推理规划引擎';
+    functionality = '赋予AI结构化思考和规划能力——将复杂问题分解为推理步骤，逐步演绎找到最优解，而非简单模式匹配';
+    coreValue = '显著提升AI在逻辑推理、数学计算、策略规划等需要"深度思考"的任务上的准确率和可靠性';
+    useCases = '数学题求解、法律推理分析、投资策略规划、游戏AI决策';
+    tags.push('推理引擎');
+  }
+  if (/browser|web|frontend|ui|selenium/i.test(text)) {
+    category = '浏览器/UI 自动化';
+    functionality = '让AI像人类一样操作浏览器和应用程序界面——自动点击、填表、翻页、截图、提取数据';
+    coreValue = '将重复性的Web操作和UI测试完全自动化，节省大量QA和数据处理人力，7×24无人值守运行';
+    useCases = 'Web端到端测试、电商竞品价格监控、表单自动填写、网页数据批量采集';
+    tags.push('浏览器自动化');
+  }
+  if (/monitor|observ|track|tracing/i.test(text)) {
+    category = 'Agent 监控可观测平台';
+    functionality = '对AI Agent的运行状态进行全链路监控——追踪每次推理调用、记录决策链路、分析性能瓶颈、预警异常行为';
+    coreValue = '让AI Agent的行为从"黑盒"变为"透明"，及时发现性能退化、成本异常和安全问题，保障生产环境稳定运行';
+    useCases = 'LLM调用成本分析、Agent行为审计、推理延迟优化、安全合规监控';
+    tags.push('可观测性');
+  }
+  if (/evaluat|benchmark|test/i.test(text)) {
+    category = 'Agent 评测基准平台';
+    functionality = '用标准化基准测试衡量AI Agent的真实能力——定义评估维度、构建测试用例、自动评分和排行';
+    coreValue = '为Agent选型提供客观数据支撑，避免"凭感觉选模型"，确保上线的Agent达到预期的质量水准';
+    useCases = '模型选型对比评估、Agent上线前质量门禁、持续回归测试、行业能力基准排行';
+    tags.push('评测基准');
+  }
+  if (/security|safe|guard/i.test(text)) {
+    category = 'AI 安全防护系统';
+    functionality = '为AI应用构建多层安全防护——输入过滤、输出审查、越狱检测、敏感信息脱敏，确保AI行为在安全边界之内';
+    coreValue = '降低AI应用的法律合规风险和品牌声誉风险，让企业放心将AI部署到面向客户的生产环境';
+    useCases = '用户输入内容审核、AI输出合规审查、企业数据防泄漏、红队安全测试';
+    tags.push('安全防护');
+  }
 
-  return summary.length > 220 ? summary.slice(0, 217) + '...' : summary;
+  // 生态标签（叠加，不覆盖主分类）
+  if (/claude|anthropic/i.test(text)) tags.push('Claude生态');
+  if (/openai|gpt|chatgpt/i.test(text)) tags.push('OpenAI生态');
+  if (/deepseek/i.test(text)) tags.push('DeepSeek生态');
+
+  // 热度评级
+  let heat = '新锐项目，社区正在快速成长中';
+  if (stars > 100000) heat = '现象级项目，全球开发者社区最受瞩目的开源明星之一';
+  else if (stars > 50000) heat = '超高热度项目，在AI Agent领域拥有广泛的影响力和用户基础';
+  else if (stars > 10000) heat = '热门项目，已被大量开发者验证并在生产环境中广泛使用';
+  else if (stars > 1000) heat = '正在崛起的优秀项目，社区活跃度高，功能迭代迅速';
+  else if (stars > 100) heat = '新兴潜力项目，在细分领域展现出独特的技术创新';
+
+  // 技术特征提取
+  let techFeatures = [];
+  if (lang) techFeatures.push(`${lang} 开发`);
+  if (topics.includes('python')) techFeatures.push('Python生态');
+  if (topics.includes('typescript') || topics.includes('javascript')) techFeatures.push('TypeScript/JS生态');
+  if (topics.includes('rust')) techFeatures.push('Rust高性能');
+  if (topics.includes('go') || topics.includes('golang')) techFeatures.push('Go云原生');
+  if (/api|rest|graphql/i.test(text)) techFeatures.push('API驱动');
+  if (/cli|command.line/i.test(text)) techFeatures.push('命令行工具');
+  if (/docker|container/i.test(text)) techFeatures.push('容器化部署');
+  if (/open.source/i.test(text)) techFeatures.push('开源协议');
+  if (/cloud|serverless/i.test(text)) techFeatures.push('云原生');
+  if (/local|offline|privacy/i.test(text)) techFeatures.push('本地运行/隐私优先');
+
+  // 去重 + 精简标签
+  tags = [...new Set(tags)].slice(0, 5);
+  techFeatures = [...new Set(techFeatures)].slice(0, 4);
+
+  // ====== 构建结构化摘要 ======
+  const html = `
+    <div class="summary-section">
+      <div class="summary-row"><span class="s-icon">📌</span><span class="s-label">功能定位：</span>${functionality}</div>
+      <div class="summary-row"><span class="s-icon">💡</span><span class="s-label">核心价值：</span>${coreValue}</div>
+      <div class="summary-row"><span class="s-icon">🎯</span><span class="s-label">适用场景：</span>${useCases}</div>
+      ${desc ? `<div class="summary-row"><span class="s-icon">📝</span><span class="s-label">项目简介：</span>${desc.length > 200 ? desc.slice(0,197)+'...' : desc}</div>` : ''}
+      <div class="summary-row"><span class="s-icon">🏷️</span><span class="s-label">技术特征：</span>${techFeatures.length > 0 ? techFeatures.join(' · ') : '通用技术栈'}</div>
+      <div class="summary-row"><span class="s-icon">📊</span><span class="s-label">社区热度：</span>${heat}</div>
+      ${tags.length > 0 ? `<div class="summary-row"><span class="s-icon">🔖</span><span class="s-label">生态标签：</span>${tags.join(' · ')}</div>` : ''}
+    </div>`;
+
+  // 纯文本版（用于搜索）
+  const plainText = `【${category}】${functionality}。${coreValue}。适用场景：${useCases}。${desc}。技术特征：${techFeatures.join('、')}。社区热度：${heat}。标签：${tags.join('、')}`;
+
+  return { html, text: plainText, category, heat };
 }
 
 async function searchAll() {
@@ -807,9 +1001,12 @@ function renderCard(repo) {
   if (lang) tagHTML += `<span class="tag tag-lang">${lang}</span>`;
   if (repo._category === 'framework') tagHTML += `<span class="tag tag-framework">Framework</span>`;
   if (repo._category === 'multi-agent') tagHTML += `<span class="tag tag-multi">Multi-Agent</span>`;
+  if (repo._category === 'skills') tagHTML += `<span class="tag tag-skills">Skills</span>`;
+  if (repo._category === 'mcp') tagHTML += `<span class="tag tag-mcp">MCP</span>`;
+  if (repo._category === 'tool') tagHTML += `<span class="tag tag-tool">Tooling</span>`;
   if (repo.topics && repo.topics.length > 0) {
     repo.topics.slice(0, 3).forEach(t => {
-      if (!['framework','multi-agent','mcp','agent','ai','llm'].includes(t.toLowerCase())) {
+      if (!['framework','multi-agent','mcp','agent','ai','llm','skills'].includes(t.toLowerCase())) {
         tagHTML += `<span class="tag tag-topic">#${t}</span>`;
       }
     });
@@ -837,7 +1034,9 @@ function renderCard(repo) {
       </div>
     </div>
     <div class="repo-summary" id="summary-${r}">
-      <p><span class="s-label">📋 应用范围：</span>${repo._summary || repo.description || '暂无摘要'}</p>
+      ${repo._summary && repo._summary.html
+        ? repo._summary.html
+        : `<p><span class="s-label">📋 项目简介：</span>${repo._summary || repo.description || '暂无摘要'}</p>`}
       <p style="margin-top:8px;font-size:12px;color:#666;">
         ⭐ ${fmtFull(stars)} stars
         · 🍴 ${fmtFull(forks)} forks
@@ -870,12 +1069,16 @@ function applyFilter(repos) {
 function applySearch(repos, query) {
   if (!query) return repos;
   const q = query.toLowerCase();
-  return repos.filter(r =>
-    r.name.toLowerCase().includes(q) ||
-    r.full_name.toLowerCase().includes(q) ||
-    (r.description || '').toLowerCase().includes(q) ||
-    r._summary.toLowerCase().includes(q)
-  );
+  return repos.filter(r => {
+    if (r.name.toLowerCase().includes(q)) return true;
+    if (r.full_name.toLowerCase().includes(q)) return true;
+    if ((r.description || '').toLowerCase().includes(q)) return true;
+    const summaryText = r._summary && r._summary.text
+      ? r._summary.text
+      : (typeof r._summary === 'string' ? r._summary : '');
+    if (summaryText.toLowerCase().includes(q)) return true;
+    return false;
+  });
 }
 
 function renderList() {
@@ -983,9 +1186,9 @@ async function loadData(forceRefresh = false) {
     container.innerHTML = `
       <div class="error-box">
         <div class="error-icon">📡</div>
-        <p class="error-msg">${e.message === 'RATE_LIMIT' ? 'GitHub API 频率限制，请稍后再试或配置 Token' : '无法获取数据：' + e.message}</p>
+        <p class="error-msg">${e.message === 'RATE_LIMIT' ? 'GitHub API 频率限制 (60次/小时)，请点击上方 🔑 TOKEN 按钮配置 Token 提升至 5000次/小时' : '无法获取数据：' + e.message}</p>
         <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">
-          提示：在页面中设置 <code>GITHUB_TOKEN</code> 可提升调用限额至 5000 次/小时
+          Token 无需任何权限，仅用于提升 API 调用限额。点击 <a href="https://github.com/settings/tokens" target="_blank" style="color:var(--neon-cyan)">这里</a> 创建 (classic token，无需勾选任何 scope)
         </p>
         <button class="retry-btn" onclick="refreshData()">🔄 重试</button>
       </div>`;
@@ -1000,6 +1203,44 @@ async function refreshData() {
   await loadData(true);
   btn.disabled = false;
   btn.textContent = '🔄 REFRESH';
+}
+
+// Token 管理
+function updateTokenUI() {
+  const btn = document.getElementById('tokenBtn');
+  if (hasToken()) {
+    btn.classList.add('has-token');
+    btn.title = 'Token 已配置 (点击更换)';
+  } else {
+    btn.classList.remove('has-token');
+    btn.title = '配置 GitHub Token';
+  }
+}
+
+function toggleToken() {
+  const row = document.getElementById('tokenRow');
+  row.classList.toggle('show');
+  if (row.classList.contains('show')) {
+    document.getElementById('tokenInput').value = getToken();
+    document.getElementById('tokenInput').focus();
+  }
+}
+
+function saveToken() {
+  const val = document.getElementById('tokenInput').value.trim();
+  if (!val) return;
+  localStorage.setItem(TOKEN_KEY, val);
+  updateTokenUI();
+  document.getElementById('tokenRow').classList.remove('show');
+  refreshData();
+}
+
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+  document.getElementById('tokenInput').value = '';
+  updateTokenUI();
+  document.getElementById('tokenRow').classList.remove('show');
+  refreshData();
 }
 
 // ============================================================
@@ -1031,6 +1272,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 // 启动
+updateTokenUI();
 loadData();
 </script>
 </body>
